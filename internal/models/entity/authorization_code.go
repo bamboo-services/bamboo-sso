@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// AuthorizationCodeEntity 表示SSO授权码实体，这是你的核心设计实现。
+// AuthorizationCode 表示SSO授权码实体，这是你的核心设计实现。
 //
 // 设计特点：
 //   - 几小时有效期的授权码（非一次性）
@@ -28,7 +28,7 @@ import (
 //   - LastUsedAt: 最后使用时间。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type AuthorizationCodeEntity struct {
+type AuthorizationCode struct {
 	UUID               uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:授权码记录唯一标识符"`
 	Code               string     `json:"code" gorm:"type:varchar(128);not null;uniqueIndex;comment:授权码值"`
 	UserUUID           uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
@@ -44,12 +44,12 @@ type AuthorizationCodeEntity struct {
 	UpdatedAt          time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User        *UserEntity        `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
-	Application *ApplicationEntity `json:"application,omitempty" gorm:"foreignKey:ApplicationUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联应用"`
+	User        *User        `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	Application *Application `json:"application,omitempty" gorm:"foreignKey:ApplicationUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联应用"`
 }
 
-// BeforeCreate 在创建 AuthorizationCodeEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (ac *AuthorizationCodeEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 AuthorizationCode 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (ac *AuthorizationCode) BeforeCreate(tx *gorm.DB) (err error) {
 	if ac.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -60,24 +60,24 @@ func (ac *AuthorizationCodeEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 AuthorizationCodeEntity 记录前自动更新 UpdatedAt 字段。
-func (ac *AuthorizationCodeEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 AuthorizationCode 记录前自动更新 UpdatedAt 字段。
+func (ac *AuthorizationCode) BeforeUpdate(tx *gorm.DB) (err error) {
 	ac.UpdatedAt = time.Now()
 	return
 }
 
 // IsExpired 检查授权码是否已过期
-func (ac *AuthorizationCodeEntity) IsExpired() bool {
+func (ac *AuthorizationCode) IsExpired() bool {
 	return time.Now().After(ac.ExpiresAt)
 }
 
 // IsValid 检查授权码是否有效（未过期且激活）
-func (ac *AuthorizationCodeEntity) IsValid() bool {
+func (ac *AuthorizationCode) IsValid() bool {
 	return ac.IsActive && !ac.IsExpired()
 }
 
 // IncrementUsage 增加使用次数并更新最后使用时间
-func (ac *AuthorizationCodeEntity) IncrementUsage() {
+func (ac *AuthorizationCode) IncrementUsage() {
 	ac.UsageCount++
 	now := time.Now()
 	ac.LastUsedAt = &now

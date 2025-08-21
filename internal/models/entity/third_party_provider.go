@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ThirdPartyProviderEntity 表示第三方登录提供商实体，存储第三方平台的配置信息。
+// ThirdPartyProvider 表示第三方登录提供商实体，存储第三方平台的配置信息。
 //
 // 字段说明：
 //   - UUID: 提供商的唯一标识符，由 UUID 表示。
@@ -23,7 +23,7 @@ import (
 //   - SortOrder: 排序顺序，用于前端显示。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type ThirdPartyProviderEntity struct {
+type ThirdPartyProvider struct {
 	UUID         uuid.UUID `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:第三方提供商唯一标识符"`
 	Name         string    `json:"name" gorm:"type:varchar(50);not null;comment:提供商名称"`
 	Code         string    `json:"code" gorm:"type:varchar(30);not null;uniqueIndex;comment:提供商代码"`
@@ -40,13 +40,13 @@ type ThirdPartyProviderEntity struct {
 	UpdatedAt    time.Time `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	WechatAccounts []*UserThirdPartyWechatEntity `json:"wechat_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信用户账号"`
-	GithubAccounts []*UserThirdPartyGithubEntity `json:"github_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github用户账号"`
-	QQAccounts     []*UserThirdPartyQQEntity     `json:"qq_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ用户账号"`
+	WechatAccounts []*UserThirdPartyWechat `json:"wechat_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信用户账号"`
+	GithubAccounts []*UserThirdPartyGithub `json:"github_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github用户账号"`
+	QQAccounts     []*UserThirdPartyQQ     `json:"qq_accounts,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ用户账号"`
 }
 
-// BeforeCreate 在创建 ThirdPartyProviderEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (tpp *ThirdPartyProviderEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 ThirdPartyProvider 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (tpp *ThirdPartyProvider) BeforeCreate(tx *gorm.DB) (err error) {
 	if tpp.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -57,8 +57,8 @@ func (tpp *ThirdPartyProviderEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 ThirdPartyProviderEntity 记录前自动更新 UpdatedAt 字段。
-func (tpp *ThirdPartyProviderEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 ThirdPartyProvider 记录前自动更新 UpdatedAt 字段。
+func (tpp *ThirdPartyProvider) BeforeUpdate(tx *gorm.DB) (err error) {
 	tpp.UpdatedAt = time.Now()
 	return
 }

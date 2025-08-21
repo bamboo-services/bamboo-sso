@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserThirdPartyQQEntity 表示用户QQ账号绑定实体，存储用户与QQ平台账号的绑定关系。
+// UserThirdPartyQQ 表示用户QQ账号绑定实体，存储用户与QQ平台账号的绑定关系。
 //
 // QQ登录特有字段：
 //   - OpenID: QQ用户唯一标识
@@ -59,7 +59,7 @@ import (
 //   - LastLoginAt: 最后一次通过QQ登录的时间。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserThirdPartyQQEntity struct {
+type UserThirdPartyQQ struct {
 	UUID           uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:QQ绑定记录唯一标识符"`
 	UserUUID       uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	ProviderUUID   uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联QQ提供商UUID"`
@@ -92,12 +92,12 @@ type UserThirdPartyQQEntity struct {
 	UpdatedAt      time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User     *UserEntity               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
-	Provider *ThirdPartyProviderEntity `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联QQ提供商"`
+	User     *User               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	Provider *ThirdPartyProvider `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联QQ提供商"`
 }
 
-// BeforeCreate 在创建 UserThirdPartyQQEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpq *UserThirdPartyQQEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 UserThirdPartyQQ 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (utpq *UserThirdPartyQQ) BeforeCreate(tx *gorm.DB) (err error) {
 	if utpq.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -111,13 +111,8 @@ func (utpq *UserThirdPartyQQEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserThirdPartyQQEntity 记录前自动更新 UpdatedAt 字段。
-func (utpq *UserThirdPartyQQEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 UserThirdPartyQQ 记录前自动更新 UpdatedAt 字段。
+func (utpq *UserThirdPartyQQ) BeforeUpdate(tx *gorm.DB) (err error) {
 	utpq.UpdatedAt = time.Now()
 	return
-}
-
-// TableName 指定表名
-func (utpq *UserThirdPartyQQEntity) TableName() string {
-	return "user_third_party_qqs"
 }

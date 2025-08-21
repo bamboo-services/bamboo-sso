@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserProfileEntity 表示用户详细资料实体，存储用户的扩展信息。
+// UserProfile 表示用户详细资料实体，存储用户的扩展信息。
 //
 // 字段说明：
 //   - UUID: 用户资料的唯一标识符，由 UUID 表示。
@@ -21,7 +21,7 @@ import (
 //   - Bio: 个人简介，可选字段。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserProfileEntity struct {
+type UserProfile struct {
 	UUID      uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户资料唯一标识符"`
 	UserUUID  uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;uniqueIndex;comment:关联用户UUID"`
 	Nickname  string     `json:"nickname" gorm:"type:varchar(50);comment:用户昵称"`
@@ -36,11 +36,11 @@ type UserProfileEntity struct {
 	UpdatedAt time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User *UserEntity `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	User *User `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
 }
 
-// BeforeCreate 在创建 UserProfileEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (up *UserProfileEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 UserProfile 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (up *UserProfile) BeforeCreate(tx *gorm.DB) (err error) {
 	if up.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -51,8 +51,8 @@ func (up *UserProfileEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserProfileEntity 记录前自动更新 UpdatedAt 字段。
-func (up *UserProfileEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 UserProfile 记录前自动更新 UpdatedAt 字段。
+func (up *UserProfile) BeforeUpdate(tx *gorm.DB) (err error) {
 	up.UpdatedAt = time.Now()
 	return
 }

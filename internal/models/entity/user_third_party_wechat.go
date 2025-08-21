@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserThirdPartyWechatEntity 表示用户微信账号绑定实体，存储用户与微信平台账号的绑定关系。
+// UserThirdPartyWechat 表示用户微信账号绑定实体，存储用户与微信平台账号的绑定关系。
 //
 // 微信登录特有字段：
 //   - UnionID: 微信开放平台唯一标识，用于统一用户身份
@@ -41,7 +41,7 @@ import (
 //   - LastLoginAt: 最后一次通过微信登录的时间。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserThirdPartyWechatEntity struct {
+type UserThirdPartyWechat struct {
 	UUID           uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:微信绑定记录唯一标识符"`
 	UserUUID       uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	ProviderUUID   uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联微信提供商UUID"`
@@ -67,12 +67,12 @@ type UserThirdPartyWechatEntity struct {
 	UpdatedAt      time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User     *UserEntity               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
-	Provider *ThirdPartyProviderEntity `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联微信提供商"`
+	User     *User               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	Provider *ThirdPartyProvider `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联微信提供商"`
 }
 
-// BeforeCreate 在创建 UserThirdPartyWechatEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpw *UserThirdPartyWechatEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 UserThirdPartyWechat 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (utpw *UserThirdPartyWechat) BeforeCreate(tx *gorm.DB) (err error) {
 	if utpw.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -86,13 +86,8 @@ func (utpw *UserThirdPartyWechatEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserThirdPartyWechatEntity 记录前自动更新 UpdatedAt 字段。
-func (utpw *UserThirdPartyWechatEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 UserThirdPartyWechat 记录前自动更新 UpdatedAt 字段。
+func (utpw *UserThirdPartyWechat) BeforeUpdate(tx *gorm.DB) (err error) {
 	utpw.UpdatedAt = time.Now()
 	return
-}
-
-// TableName 指定表名
-func (utpw *UserThirdPartyWechatEntity) TableName() string {
-	return "user_third_party_wechats"
 }

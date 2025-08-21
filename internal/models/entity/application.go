@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ApplicationEntity 表示接入SSO的客户端应用实体，存储第三方应用的配置信息。
+// Application 表示接入SSO的客户端应用实体，存储第三方应用的配置信息。
 //
 // 字段说明：
 //   - UUID: 应用的唯一标识符，由 UUID 表示。
@@ -24,7 +24,7 @@ import (
 //   - CreatedBy: 创建者UUID。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type ApplicationEntity struct {
+type Application struct {
 	UUID              uuid.UUID `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:应用唯一标识符"`
 	Name              string    `json:"name" gorm:"type:varchar(100);not null;comment:应用名称"`
 	Description       string    `json:"description" gorm:"type:text;comment:应用描述"`
@@ -42,12 +42,12 @@ type ApplicationEntity struct {
 	UpdatedAt         time.Time `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	AuthorizationCodes []*AuthorizationCodeEntity `json:"authorization_codes,omitempty" gorm:"foreignKey:ApplicationUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
-	Creator            *UserEntity                `json:"creator,omitempty" gorm:"foreignKey:CreatedBy;references:UUID;comment:创建者"`
+	AuthorizationCodes []*AuthorizationCode `json:"authorization_codes,omitempty" gorm:"foreignKey:ApplicationUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
+	Creator            *User                `json:"creator,omitempty" gorm:"foreignKey:CreatedBy;references:UUID;comment:创建者"`
 }
 
-// BeforeCreate 在创建 ApplicationEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (a *ApplicationEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 Application 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (a *Application) BeforeCreate(tx *gorm.DB) (err error) {
 	if a.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -58,8 +58,8 @@ func (a *ApplicationEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 ApplicationEntity 记录前自动更新 UpdatedAt 字段。
-func (a *ApplicationEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 Application 记录前自动更新 UpdatedAt 字段。
+func (a *Application) BeforeUpdate(tx *gorm.DB) (err error) {
 	a.UpdatedAt = time.Now()
 	return
 }

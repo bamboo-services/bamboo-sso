@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserThirdPartyGithubEntity 表示用户Github账号绑定实体，存储用户与Github平台账号的绑定关系。
+// UserThirdPartyGithub 表示用户Github账号绑定实体，存储用户与Github平台账号的绑定关系。
 //
 // Github登录特有字段：
 //   - GithubID: Github用户ID（数字）
@@ -56,7 +56,7 @@ import (
 //   - LastLoginAt: 最后一次通过Github登录的时间。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserThirdPartyGithubEntity struct {
+type UserThirdPartyGithub struct {
 	UUID             uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:Github绑定记录唯一标识符"`
 	UserUUID         uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	ProviderUUID     uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联Github提供商UUID"`
@@ -89,12 +89,12 @@ type UserThirdPartyGithubEntity struct {
 	UpdatedAt        time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User     *UserEntity               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
-	Provider *ThirdPartyProviderEntity `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联Github提供商"`
+	User     *User               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	Provider *ThirdPartyProvider `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联Github提供商"`
 }
 
-// BeforeCreate 在创建 UserThirdPartyGithubEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpg *UserThirdPartyGithubEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 UserThirdPartyGithub 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (utpg *UserThirdPartyGithub) BeforeCreate(tx *gorm.DB) (err error) {
 	if utpg.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -108,13 +108,8 @@ func (utpg *UserThirdPartyGithubEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserThirdPartyGithubEntity 记录前自动更新 UpdatedAt 字段。
-func (utpg *UserThirdPartyGithubEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 UserThirdPartyGithub 记录前自动更新 UpdatedAt 字段。
+func (utpg *UserThirdPartyGithub) BeforeUpdate(tx *gorm.DB) (err error) {
 	utpg.UpdatedAt = time.Now()
 	return
-}
-
-// TableName 指定表名
-func (utpg *UserThirdPartyGithubEntity) TableName() string {
-	return "user_third_party_githubs"
 }

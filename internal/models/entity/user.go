@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserEntity 表示系统中的用户实体，存储用户基础信息。
+// User 表示系统中的用户实体，存储用户基础信息。
 //
 // 字段说明：
 //   - UUID: 用户的唯一标识符，由 UUID 表示。
@@ -18,7 +18,7 @@ import (
 //   - LastLoginAt: 最后登录时间。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserEntity struct {
+type User struct {
 	UUID         uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户唯一标识符"`
 	Username     string     `json:"username" gorm:"type:varchar(50);not null;uniqueIndex;comment:用户名"`
 	Email        string     `json:"email" gorm:"type:varchar(100);not null;uniqueIndex;comment:邮箱地址"`
@@ -30,16 +30,16 @@ type UserEntity struct {
 	UpdatedAt    time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	Profile            *UserProfileEntity            `json:"profile,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:用户详细资料"`
-	Roles              []*RoleEntity                 `json:"roles,omitempty" gorm:"many2many:user_roles;comment:用户角色"`
-	WechatAccounts     []*UserThirdPartyWechatEntity `json:"wechat_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信账号"`
-	GithubAccounts     []*UserThirdPartyGithubEntity `json:"github_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github账号"`
-	QQAccounts         []*UserThirdPartyQQEntity     `json:"qq_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ账号"`
-	AuthorizationCodes []*AuthorizationCodeEntity    `json:"authorization_codes,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
+	Profile            *UserProfile            `json:"profile,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:用户详细资料"`
+	Roles              []*Role                 `json:"roles,omitempty" gorm:"many2many:user_roles;comment:用户角色"`
+	WechatAccounts     []*UserThirdPartyWechat `json:"wechat_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信账号"`
+	GithubAccounts     []*UserThirdPartyGithub `json:"github_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github账号"`
+	QQAccounts         []*UserThirdPartyQQ     `json:"qq_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ账号"`
+	AuthorizationCodes []*AuthorizationCode    `json:"authorization_codes,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
 }
 
-// BeforeCreate 在创建 UserEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (u *UserEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 User 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if u.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -50,8 +50,8 @@ func (u *UserEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserEntity 记录前自动更新 UpdatedAt 字段。
-func (u *UserEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 User 记录前自动更新 UpdatedAt 字段。
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	u.UpdatedAt = time.Now()
 	return
 }

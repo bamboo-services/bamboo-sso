@@ -11,6 +11,10 @@ require (
 	gorm.io/gorm v1.30.1
 )
 
+replace (
+	github.com/bamboo-services/bamboo-base-go v1.0.0-202508212147 => /Users/xiaolfeng/ProgramProjects/Cooperate/bamboo-service/bamboo-base
+)
+
 require (
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect

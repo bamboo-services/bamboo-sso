@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// LoginLogEntity 表示用户登录日志实体，记录所有登录行为。
+// LoginLog 表示用户登录日志实体，记录所有登录行为。
 //
 // 字段说明：
 //   - UUID: 日志记录的唯一标识符，由 UUID 表示。
@@ -20,7 +20,7 @@ import (
 //   - FailureReason: 登录失败原因。
 //   - LoginAt: 登录时间。
 //   - CreatedAt: 创建记录的时间戳。
-type LoginLogEntity struct {
+type LoginLog struct {
 	UUID               uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:登录日志唯一标识符"`
 	UserUUID           *uuid.UUID `json:"user_uuid" gorm:"type:uuid;index;comment:关联用户UUID(可为空)"`
 	LoginType          string     `json:"login_type" gorm:"type:varchar(20);not null;comment:登录类型(password/third_party)"`
@@ -34,12 +34,12 @@ type LoginLogEntity struct {
 	CreatedAt          time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 
 	// 关联关系
-	User     *UserEntity               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;comment:关联用户"`
-	Provider *ThirdPartyProviderEntity `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;comment:关联第三方提供商"`
+	User     *User               `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;comment:关联用户"`
+	Provider *ThirdPartyProvider `json:"provider,omitempty" gorm:"foreignKey:ProviderUUID;references:UUID;comment:关联第三方提供商"`
 }
 
-// BeforeCreate 在创建 LoginLogEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (ll *LoginLogEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 LoginLog 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (ll *LoginLog) BeforeCreate(tx *gorm.DB) (err error) {
 	if ll.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {

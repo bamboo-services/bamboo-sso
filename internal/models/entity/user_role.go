@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// UserRoleEntity 表示用户角色关联实体，用于多对多关系映射。
+// UserRole 表示用户角色关联实体，用于多对多关系映射。
 //
 // 字段说明：
 //   - UUID: 关联记录的唯一标识符，由 UUID 表示。
@@ -18,7 +18,7 @@ import (
 //   - IsActive: 角色是否激活，默认为 true。
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
-type UserRoleEntity struct {
+type UserRole struct {
 	UUID       uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户角色关联唯一标识符"`
 	UserUUID   uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	RoleUUID   uuid.UUID  `json:"role_uuid" gorm:"type:uuid;not null;index;comment:关联角色UUID"`
@@ -30,13 +30,13 @@ type UserRoleEntity struct {
 	UpdatedAt  time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	User           *UserEntity `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
-	Role           *RoleEntity `json:"role,omitempty" gorm:"foreignKey:RoleUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联角色"`
-	AssignedByUser *UserEntity `json:"assigned_by_user,omitempty" gorm:"foreignKey:AssignedBy;references:UUID;comment:分配者"`
+	User           *User `json:"user,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联用户"`
+	Role           *Role `json:"role,omitempty" gorm:"foreignKey:RoleUUID;references:UUID;constraint:OnDelete:CASCADE;comment:关联角色"`
+	AssignedByUser *User `json:"assigned_by_user,omitempty" gorm:"foreignKey:AssignedBy;references:UUID;comment:分配者"`
 }
 
-// BeforeCreate 在创建 UserRoleEntity 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (ur *UserRoleEntity) BeforeCreate(tx *gorm.DB) (err error) {
+// BeforeCreate 在创建 UserRole 记录前自动生成新的 UUID（如果当前 UUID 为空）。
+func (ur *UserRole) BeforeCreate(tx *gorm.DB) (err error) {
 	if ur.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -50,8 +50,8 @@ func (ur *UserRoleEntity) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-// BeforeUpdate 在更新 UserRoleEntity 记录前自动更新 UpdatedAt 字段。
-func (ur *UserRoleEntity) BeforeUpdate(tx *gorm.DB) (err error) {
+// BeforeUpdate 在更新 UserRole 记录前自动更新 UpdatedAt 字段。
+func (ur *UserRole) BeforeUpdate(tx *gorm.DB) (err error) {
 	ur.UpdatedAt = time.Now()
 	return
 }
