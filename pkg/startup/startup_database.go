@@ -10,6 +10,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"sync"
 )
 
 var tableEntity = []interface{}{
@@ -77,9 +78,13 @@ func (r *reg) DatabaseStartup() {
 
 	// 初始化基础数据
 	getPrepare := &prepare{init: config.New(db, r.serv.Logger)}
-	go func() { getPrepare.PrepareRole() }()
-	go func() { getPrepare.PrepareApplication() }()
 
+	// 使用 WaitGroup 并发执数据的初始化
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go func() { defer wg.Done(); getPrepare.PrepareRole() }()
+	go func() { defer wg.Done(); getPrepare.PrepareApplication() }()
+	wg.Wait()
 	r.serv.Logger.Named(xConsts.LogINIT).Info("基础数据初始化完成")
 
 	r.db = db

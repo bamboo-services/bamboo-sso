@@ -49,7 +49,7 @@ type AuthorizationCode struct {
 }
 
 // BeforeCreate 在创建 AuthorizationCode 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (ac *AuthorizationCode) BeforeCreate(tx *gorm.DB) (err error) {
+func (ac *AuthorizationCode) BeforeCreate(_ *gorm.DB) (err error) {
 	if ac.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -61,7 +61,7 @@ func (ac *AuthorizationCode) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 AuthorizationCode 记录前自动更新 UpdatedAt 字段。
-func (ac *AuthorizationCode) BeforeUpdate(tx *gorm.DB) (err error) {
+func (ac *AuthorizationCode) BeforeUpdate(_ *gorm.DB) (err error) {
 	ac.UpdatedAt = time.Now()
 	return
 }

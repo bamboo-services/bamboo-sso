@@ -72,7 +72,7 @@ type UserThirdPartyWechat struct {
 }
 
 // BeforeCreate 在创建 UserThirdPartyWechat 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpw *UserThirdPartyWechat) BeforeCreate(tx *gorm.DB) (err error) {
+func (utpw *UserThirdPartyWechat) BeforeCreate(_ *gorm.DB) (err error) {
 	if utpw.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -87,7 +87,7 @@ func (utpw *UserThirdPartyWechat) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 UserThirdPartyWechat 记录前自动更新 UpdatedAt 字段。
-func (utpw *UserThirdPartyWechat) BeforeUpdate(tx *gorm.DB) (err error) {
+func (utpw *UserThirdPartyWechat) BeforeUpdate(_ *gorm.DB) (err error) {
 	utpw.UpdatedAt = time.Now()
 	return
 }

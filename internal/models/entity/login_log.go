@@ -39,7 +39,7 @@ type LoginLog struct {
 }
 
 // BeforeCreate 在创建 LoginLog 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (ll *LoginLog) BeforeCreate(tx *gorm.DB) (err error) {
+func (ll *LoginLog) BeforeCreate(_ *gorm.DB) (err error) {
 	if ll.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {

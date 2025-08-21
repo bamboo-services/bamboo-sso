@@ -97,7 +97,7 @@ type UserThirdPartyQQ struct {
 }
 
 // BeforeCreate 在创建 UserThirdPartyQQ 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpq *UserThirdPartyQQ) BeforeCreate(tx *gorm.DB) (err error) {
+func (utpq *UserThirdPartyQQ) BeforeCreate(_ *gorm.DB) (err error) {
 	if utpq.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -112,7 +112,7 @@ func (utpq *UserThirdPartyQQ) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 UserThirdPartyQQ 记录前自动更新 UpdatedAt 字段。
-func (utpq *UserThirdPartyQQ) BeforeUpdate(tx *gorm.DB) (err error) {
+func (utpq *UserThirdPartyQQ) BeforeUpdate(_ *gorm.DB) (err error) {
 	utpq.UpdatedAt = time.Now()
 	return
 }

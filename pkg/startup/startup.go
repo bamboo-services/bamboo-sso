@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type reg struct {
@@ -24,11 +25,17 @@ func New(serv *xInit.Reg) *reg {
 func Register(serv *xInit.Reg) *gin.Engine {
 	reg := New(serv)
 
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
 	// 初始化内容注册
-	reg.DatabaseStartup()
-	reg.RedisStartup()
+	go func() { defer wg.Done(); reg.DatabaseStartup() }()
+	go func() { defer wg.Done(); reg.RedisStartup() }()
+
+	wg.Wait()
 
 	// 注册上下文
+	reg.ContextRegister()
 
 	return reg.serv.Serve
 }

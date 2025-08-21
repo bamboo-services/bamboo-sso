@@ -24,7 +24,7 @@ type Role struct {
 }
 
 // BeforeCreate 在创建 Role 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (r *Role) BeforeCreate(tx *gorm.DB) (err error) {
+func (r *Role) BeforeCreate(_ *gorm.DB) (err error) {
 	if r.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -36,7 +36,7 @@ func (r *Role) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 Role 记录前自动更新 UpdatedAt 字段。
-func (r *Role) BeforeUpdate(tx *gorm.DB) (err error) {
+func (r *Role) BeforeUpdate(_ *gorm.DB) (err error) {
 	r.UpdatedAt = time.Now()
 	return
 }

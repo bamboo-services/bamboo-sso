@@ -40,7 +40,7 @@ type UserProfile struct {
 }
 
 // BeforeCreate 在创建 UserProfile 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (up *UserProfile) BeforeCreate(tx *gorm.DB) (err error) {
+func (up *UserProfile) BeforeCreate(_ *gorm.DB) (err error) {
 	if up.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -52,7 +52,7 @@ func (up *UserProfile) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 UserProfile 记录前自动更新 UpdatedAt 字段。
-func (up *UserProfile) BeforeUpdate(tx *gorm.DB) (err error) {
+func (up *UserProfile) BeforeUpdate(_ *gorm.DB) (err error) {
 	up.UpdatedAt = time.Now()
 	return
 }

@@ -46,7 +46,7 @@ type AuthorizationLog struct {
 }
 
 // BeforeCreate 在创建 AuthorizationLog 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (al *AuthorizationLog) BeforeCreate(tx *gorm.DB) (err error) {
+func (al *AuthorizationLog) BeforeCreate(_ *gorm.DB) (err error) {
 	if al.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {

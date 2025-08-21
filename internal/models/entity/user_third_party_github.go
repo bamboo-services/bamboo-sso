@@ -94,7 +94,7 @@ type UserThirdPartyGithub struct {
 }
 
 // BeforeCreate 在创建 UserThirdPartyGithub 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (utpg *UserThirdPartyGithub) BeforeCreate(tx *gorm.DB) (err error) {
+func (utpg *UserThirdPartyGithub) BeforeCreate(_ *gorm.DB) (err error) {
 	if utpg.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -109,7 +109,7 @@ func (utpg *UserThirdPartyGithub) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 UserThirdPartyGithub 记录前自动更新 UpdatedAt 字段。
-func (utpg *UserThirdPartyGithub) BeforeUpdate(tx *gorm.DB) (err error) {
+func (utpg *UserThirdPartyGithub) BeforeUpdate(_ *gorm.DB) (err error) {
 	utpg.UpdatedAt = time.Now()
 	return
 }

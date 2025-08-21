@@ -47,7 +47,7 @@ type Application struct {
 }
 
 // BeforeCreate 在创建 Application 记录前自动生成新的 UUID（如果当前 UUID 为空）。
-func (a *Application) BeforeCreate(tx *gorm.DB) (err error) {
+func (a *Application) BeforeCreate(_ *gorm.DB) (err error) {
 	if a.UUID == uuid.Nil {
 		newUUID, err := uuid.NewV7()
 		if err != nil {
@@ -59,7 +59,7 @@ func (a *Application) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 // BeforeUpdate 在更新 Application 记录前自动更新 UpdatedAt 字段。
-func (a *Application) BeforeUpdate(tx *gorm.DB) (err error) {
+func (a *Application) BeforeUpdate(_ *gorm.DB) (err error) {
 	a.UpdatedAt = time.Now()
 	return
 }

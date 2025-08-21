@@ -14,7 +14,7 @@ type handler struct {
 // 此方法通过中间件将数据库和 Redis 客户端实例绑定到请求生命周期的上下文中。
 // 它确保系统在处理每个请求时都可以访问预配置的数据库和缓存实例。
 func (r *reg) ContextRegister() {
-	r.serv.Logger.Named("Context").Info("注册数据库与缓存的上下文")
+	r.serv.Logger.Named(xConsts.LogINIT).Info("注册数据库与缓存的上下文")
 
 	// 初始化注册器
 	handler := &handler{reg: r}
