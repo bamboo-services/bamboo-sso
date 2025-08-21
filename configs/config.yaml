@@ -1,0 +1,8 @@
+xlf:
+  debug: true
+database:
+  host: localhost
+  port: 5432
+  user: xlf_sso
+  pass: xlf_sso
+  name: xlf_sso
