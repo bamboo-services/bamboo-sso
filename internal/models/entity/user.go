@@ -23,19 +23,20 @@ type User struct {
 	Username     string     `json:"username" gorm:"type:varchar(50);not null;uniqueIndex;comment:用户名"`
 	Email        string     `json:"email" gorm:"type:varchar(100);not null;uniqueIndex;comment:邮箱地址"`
 	Phone        *string    `json:"phone" gorm:"type:varchar(20);comment:手机号"`
-	PasswordHash string     `json:"-" gorm:"type:varchar(255);not null;comment:密码哈希值"`
+	PasswordHash string     `json:"-" gorm:"type:char(60);not null;comment:密码哈希值"`
 	IsActive     bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
 	LastLoginAt  *time.Time `json:"last_login_at" gorm:"type:timestamp;comment:最后登录时间"`
 	CreatedAt    time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 	UpdatedAt    time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
-	Profile            *UserProfile            `json:"profile,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:用户详细资料"`
-	Roles              []*Role                 `json:"roles,omitempty" gorm:"many2many:user_roles;comment:用户角色"`
-	WechatAccounts     []*UserThirdPartyWechat `json:"wechat_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信账号"`
-	GithubAccounts     []*UserThirdPartyGithub `json:"github_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github账号"`
-	QQAccounts         []*UserThirdPartyQQ     `json:"qq_accounts,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ账号"`
-	AuthorizationCodes []*AuthorizationCode    `json:"authorization_codes,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
+	Profile            *UserProfile          `json:"profile,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:用户详细资料"`
+	WechatAccount      *UserThirdPartyWechat `json:"wechat_account,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:微信账号"`
+	GithubAccount      *UserThirdPartyGithub `json:"github_account,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:Github账号"`
+	QQAccount          *UserThirdPartyQQ     `json:"qq_account,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:QQ账号"`
+	UserRoles          []*UserRole           `json:"user_roles,omitempty" gorm:"foreignKey:UserUUID;references:UUID;comment:用户角色关联"`
+	UserTokens         []*UserToken          `json:"user_tokens,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:用户令牌"`
+	AuthorizationCodes []*AuthorizationCode  `json:"authorization_codes,omitempty" gorm:"foreignKey:UserUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`
 }
 
 // BeforeCreate 在创建 User 记录前自动生成新的 UUID（如果当前 UUID 为空）。

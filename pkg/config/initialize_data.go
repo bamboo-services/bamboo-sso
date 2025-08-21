@@ -102,3 +102,40 @@ func (i *InitializeData) ApplicationInit(getEntity ...*entity.Application) {
 		db.Create(noneAppList)
 	}
 }
+
+// SystemInit 检查并初始化系统中缺失的系统配置数据。
+//
+// 参数 getEntity 是一组指针，指向需要检测或创建的系统配置实体。
+// 如果传入的系统配置在数据库中不存在，则会创建默认的配置记录。
+// 当配置已存在时，不会重复创建，避免数据库冗余。
+//
+// 方法使用逻辑：
+//   - 首先检查每个系统配置的键是否已存在于数据库。
+//   - 若配置不存在，则记录在批量插入列表中以优化数据库操作。
+//   - 最后，统一插入所有需要创建的配置记录以减少数据库压力。
+//
+// 注意：创建操作会忽略已存在的记录，并直接略过处理。
+func (i *InitializeData) SystemInit(getEntity ...*entity.System) {
+	db := i.db
+	log := i.log
+
+	var noneSystemList []*entity.System
+
+	// 检查并创建默认系统配置
+	for _, systemEntity := range getEntity {
+		var system entity.System
+		if err := db.Where(entity.System{Key: systemEntity.Key}).First(&system).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				log.Named(xConsts.LogINIT).Sugar().Debugf("系统配置 %s 不存在，创建默认配置", systemEntity.Key)
+				noneSystemList = append(noneSystemList, systemEntity)
+			} else {
+				log.Named(xConsts.LogINIT).Sugar().Debugf("系统配置 %s 已存在，跳过创建", systemEntity.Key)
+			}
+		}
+	}
+
+	// 批量创建系统配置「统一插入减少数据库操作压力」
+	if len(noneSystemList) > 0 {
+		db.Create(noneSystemList)
+	}
+}

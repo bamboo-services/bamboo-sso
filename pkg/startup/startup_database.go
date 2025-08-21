@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"errors"
 	"fmt"
 	xConsts "github.com/bamboo-services/bamboo-base-go/constants"
 	xUtil "github.com/bamboo-services/bamboo-base-go/utility"
@@ -18,6 +19,7 @@ var tableEntity = []interface{}{
 	&entity.User{},
 	&entity.UserProfile{},
 	&entity.UserRole{},
+	&entity.UserToken{},
 	&entity.ThirdPartyProvider{},
 	&entity.UserThirdPartyWechat{},
 	&entity.UserThirdPartyGithub{},
@@ -26,6 +28,7 @@ var tableEntity = []interface{}{
 	&entity.AuthorizationCode{},
 	&entity.LoginLog{},
 	&entity.AuthorizationLog{},
+	&entity.System{},
 }
 
 // prepare 表示服务的初始化准备阶段，包括注册器和基础数据的初始化。
@@ -34,6 +37,7 @@ var tableEntity = []interface{}{
 // - reg: 注册器实例，提供服务、数据库和缓存相关的功能。
 // - init: 基础数据初始化实例，用于配置初始化数据库所需的数据。
 type prepare struct {
+	db   *gorm.DB               // db 是数据库连接实例，用于执行数据库操作
 	init *config.InitializeData // init 是初始化数据实例，用于准备基础数据
 }
 
@@ -77,13 +81,24 @@ func (r *reg) DatabaseStartup() {
 	}
 
 	// 初始化基础数据
-	getPrepare := &prepare{init: config.New(db, r.serv.Logger)}
+	getPrepare := &prepare{db: db, init: config.New(db, r.serv.Logger)}
 
 	// 使用 WaitGroup 并发执数据的初始化
 	wg := sync.WaitGroup{}
-	wg.Add(2)
-	go func() { defer wg.Done(); getPrepare.PrepareRole() }()
-	go func() { defer wg.Done(); getPrepare.PrepareApplication() }()
+	wg.Add(4)
+	done := make(chan int, 3)
+
+	go func() { defer wg.Done(); getPrepare.PrepareRole(); done <- 0 }()
+	go func() { defer wg.Done(); getPrepare.PrepareApplication(); done <- 0 }()
+	go func() { defer wg.Done(); getPrepare.PrepareSystem(); done <- 0 }()
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 3; i++ {
+			<-done
+		}
+		getPrepare.PrepareSuperAdmin()
+
+	}()
 	wg.Wait()
 	r.serv.Logger.Named(xConsts.LogINIT).Info("基础数据初始化完成")
 
@@ -163,4 +178,63 @@ func (p *prepare) PrepareApplication() {
 			AllowedOrigins:    &demoApplicationAllowedOriginsJson,
 		},
 	)
+}
+
+// PrepareSystem 初始化系统的默认配置数据。
+//
+// 调用此方法时，将在系统配置表中检查是否存在预定义的配置数据。若配置不存在，则创建以下默认配置：
+// - "system.version": 系统版本信息。
+// - "system.name": 系统名称。
+// 此方法用于系统初始化阶段以确保基础配置数据的完整性。
+func (p *prepare) PrepareSystem() {
+	p.init.SystemInit(
+		&entity.System{Key: "system.version", Value: xUtil.Ptr("1.0.0")},
+		&entity.System{Key: "system.name", Value: xUtil.Ptr("Bamboo SSO")},
+	)
+}
+
+// PrepareSuperAdmin 创建系统超级管理员账户并初始化相关角色关联关系。
+// 如果系统中不存在超级管理员配置，则生成默认的超级管理员用户和角色。
+// 若初始化失败或相关依赖数据不存在，会触发 panic。
+func (p *prepare) PrepareSuperAdmin() {
+	var getSystemInfo entity.System
+	result := p.db.Where(&entity.System{Key: "system.admin.super"}).First(&getSystemInfo)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// 用户密码
+		password, err := xUtil.EncryptPasswordString("super_admin")
+		if err != nil {
+			panic(fmt.Sprintf("[DB] 创建超级管理员用户失败: %s", err.Error()))
+		}
+		// 创建超级管理员用户
+		var superAdmin = entity.User{
+			Username:     "super_admin",
+			Email:        "super_admin@x-lf.com",
+			PasswordHash: password,
+		}
+		if err := p.db.Create(&superAdmin).Error; err != nil {
+			panic(fmt.Sprintf("[DB] 创建超级管理员用户失败: %s", err.Error()))
+		}
+		// 获取超级管理员角色
+		var superAdminRole entity.Role
+		result := p.db.Where(&entity.Role{Name: "SUPER_ADMIN"}).First(&superAdminRole)
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			panic("[DB] 超级管理员角色不存在，请先初始化角色数据")
+		}
+		// 创建超级管理员角色关联
+		var userRole = entity.UserRole{
+			UserUUID: superAdmin.UUID,
+			RoleUUID: superAdminRole.UUID,
+		}
+		if err := p.db.Create(&userRole).Error; err != nil {
+			panic(fmt.Sprintf("[DB] 创建超级管理员角色关联失败: %s", err.Error()))
+		}
+		// 创建系统配置
+		var systemConfig = entity.System{
+			Key:   "system.admin.super",
+			Value: xUtil.Ptr(superAdmin.UUID.String()),
+		}
+		if err := p.db.Create(&systemConfig).Error; err != nil {
+			panic(fmt.Sprintf("[DB] 创建系统配置失败: %s", err.Error()))
+		}
+	}
 }
