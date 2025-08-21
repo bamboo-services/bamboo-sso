@@ -45,20 +45,20 @@ type UserThirdPartyWechat struct {
 	UUID           uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:微信绑定记录唯一标识符"`
 	UserUUID       uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	ProviderUUID   uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联微信提供商UUID"`
-	UnionID        string     `json:"union_id" gorm:"type:varchar(100);uniqueIndex;comment:微信开放平台唯一标识"`
+	UnionID        *string    `json:"union_id" gorm:"type:varchar(100);uniqueIndex;comment:微信开放平台唯一标识"`
 	OpenID         string     `json:"open_id" gorm:"type:varchar(100);not null;index;comment:微信公众平台唯一标识"`
-	SessionKey     string     `json:"-" gorm:"type:varchar(255);comment:小程序会话密钥(加密)"`
-	Nickname       string     `json:"nickname" gorm:"type:varchar(100);comment:微信用户昵称"`
-	Avatar         string     `json:"avatar" gorm:"type:varchar(500);comment:微信用户头像"`
+	SessionKey     *string    `json:"-" gorm:"type:varchar(255);comment:小程序会话密钥(加密)"`
+	Nickname       *string    `json:"nickname" gorm:"type:varchar(100);comment:微信用户昵称"`
+	Avatar         *string    `json:"avatar" gorm:"type:varchar(500);comment:微信用户头像"`
 	Gender         int        `json:"gender" gorm:"type:smallint;default:0;comment:性别(0-未知,1-男,2-女)"`
-	City           string     `json:"city" gorm:"type:varchar(50);comment:城市"`
-	Province       string     `json:"province" gorm:"type:varchar(50);comment:省份"`
-	Country        string     `json:"country" gorm:"type:varchar(50);comment:国家"`
-	Language       string     `json:"language" gorm:"type:varchar(10);default:'zh_CN';comment:用户语言"`
+	City           *string    `json:"city" gorm:"type:varchar(50);comment:城市"`
+	Province       *string    `json:"province" gorm:"type:varchar(50);comment:省份"`
+	Country        *string    `json:"country" gorm:"type:varchar(50);comment:国家"`
+	Language       *string    `json:"language" gorm:"type:varchar(10);default:'zh_CN';comment:用户语言"`
 	Subscribe      bool       `json:"subscribe" gorm:"type:boolean;default:false;comment:是否关注公众号"`
 	SubscribeTime  *time.Time `json:"subscribe_time" gorm:"type:timestamp;comment:关注公众号时间"`
-	AccessToken    string     `json:"-" gorm:"type:text;comment:微信访问令牌(加密)"`
-	RefreshToken   string     `json:"-" gorm:"type:text;comment:微信刷新令牌(加密)"`
+	AccessToken    *string    `json:"-" gorm:"type:text;comment:微信访问令牌(加密)"`
+	RefreshToken   *string    `json:"-" gorm:"type:text;comment:微信刷新令牌(加密)"`
 	TokenExpiresAt *time.Time `json:"token_expires_at" gorm:"type:timestamp;comment:访问令牌过期时间"`
 	IsActive       bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
 	FirstBindAt    time.Time  `json:"first_bind_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:首次绑定时间"`

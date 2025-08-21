@@ -22,7 +22,7 @@ type User struct {
 	UUID         uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户唯一标识符"`
 	Username     string     `json:"username" gorm:"type:varchar(50);not null;uniqueIndex;comment:用户名"`
 	Email        string     `json:"email" gorm:"type:varchar(100);not null;uniqueIndex;comment:邮箱地址"`
-	Phone        string     `json:"phone" gorm:"type:varchar(20);comment:手机号"`
+	Phone        *string    `json:"phone" gorm:"type:varchar(20);comment:手机号"`
 	PasswordHash string     `json:"-" gorm:"type:varchar(255);not null;comment:密码哈希值"`
 	IsActive     bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
 	LastLoginAt  *time.Time `json:"last_login_at" gorm:"type:timestamp;comment:最后登录时间"`

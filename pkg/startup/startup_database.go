@@ -6,6 +6,7 @@ import (
 	xUtil "github.com/bamboo-services/bamboo-base-go/utility"
 	"github.com/bamboo-services/bamboo-sso/internal/models/entity"
 	"github.com/bamboo-services/bamboo-sso/pkg/config"
+	jsoniter "github.com/json-iterator/go"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -77,6 +78,7 @@ func (r *reg) DatabaseStartup() {
 	// 初始化基础数据
 	getPrepare := &prepare{init: config.New(db, r.serv.Logger)}
 	go func() { getPrepare.PrepareRole() }()
+	go func() { getPrepare.PrepareApplication() }()
 
 	r.serv.Logger.Named(xConsts.LogINIT).Info("基础数据初始化完成")
 
@@ -90,14 +92,70 @@ func (r *reg) DatabaseStartup() {
 // - "ADMIN": 管理员，仅次于超级管理员，拥有管理权限。
 // - "USER": 普通用户，具有基本访问权限。
 // 此方法用于系统初始化阶段以确保基础角色数据完整性。
-func (r *prepare) PrepareRole() {
-	r.init.RoleInit(
-		&entity.Role{Name: "SUPER_ADMIN", DisplayName: "超级管理员", Description: "拥有所有权限的超级管理员角色"},
-		&entity.Role{Name: "ADMIN", DisplayName: "管理员", Description: "拥有管理权限的管理员角色"},
-		&entity.Role{Name: "USER", DisplayName: "普通用户", Description: "普通用户角色，拥有基本的访问权限"},
+func (p *prepare) PrepareRole() {
+	superAdminDesc := "拥有所有权限的超级管理员角色"
+	adminDesc := "拥有管理权限的管理员角色"
+	userDesc := "普通用户角色，拥有基本的访问权限"
+
+	p.init.RoleInit(
+		&entity.Role{Name: "SUPER_ADMIN", DisplayName: "超级管理员", Description: &superAdminDesc},
+		&entity.Role{Name: "ADMIN", DisplayName: "管理员", Description: &adminDesc},
+		&entity.Role{Name: "USER", DisplayName: "普通用户", Description: &userDesc},
 	)
 }
 
+// PrepareApplication 初始化系统的默认应用数据。
+//
+// 调用此方法时，将在应用表中检查是否存在预定义的应用数据。若应用不存在，则创建以下默认应用：
+// - "Bamboo SSO": 单点登录服务应用，提供基础 SSO 功能支持。
+// 此方法用于系统初始化阶段以确保基础应用数据的完整性。
 func (p *prepare) PrepareApplication() {
+	// 默认应用相关
+	defaultApplicationRedirectJson, err := jsoniter.MarshalToString([]string{
+		"http://localhost:2233",
+		"http://localhost:4173",
+		"http://localhost:3000",
+		"http://localhost:4000",
+	})
+	defaultApplicationAllowedOriginsJson, err := jsoniter.MarshalToString([]string{
+		"http://localhost:2233",
+		"http://localhost:4173",
+		"http://localhost:3000",
+		"http://localhost:4000",
+	})
 
+	// 测试应用相关
+	demoApplicationRedirectJson, err := jsoniter.MarshalToString([]string{
+		"*",
+	})
+	demoApplicationAllowedOriginsJson, err := jsoniter.MarshalToString([]string{
+		"*",
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	// 初始化默认应用
+	defaultDesc := "Bamboo SSO 应用"
+	demoDesc := "用于测试的应用"
+
+	p.init.ApplicationInit(
+		&entity.Application{
+			Name:              "默认应用",
+			Description:       &defaultDesc,
+			ApplicationID:     "10000",
+			ApplicationSecret: xUtil.GenerateSecurityKey(),
+			RedirectURIs:      &defaultApplicationRedirectJson,
+			AllowedOrigins:    &defaultApplicationAllowedOriginsJson,
+		},
+		&entity.Application{
+			Name:              "测试应用",
+			Description:       &demoDesc,
+			ApplicationID:     "10001",
+			ApplicationSecret: xUtil.GenerateSecurityKey(),
+			RedirectURIs:      &demoApplicationRedirectJson,
+			AllowedOrigins:    &demoApplicationAllowedOriginsJson,
+		},
+	)
 }

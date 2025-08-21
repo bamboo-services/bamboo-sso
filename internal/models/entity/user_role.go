@@ -22,7 +22,7 @@ type UserRole struct {
 	UUID       uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户角色关联唯一标识符"`
 	UserUUID   uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	RoleUUID   uuid.UUID  `json:"role_uuid" gorm:"type:uuid;not null;index;comment:关联角色UUID"`
-	AssignedBy uuid.UUID  `json:"assigned_by" gorm:"type:uuid;comment:分配者UUID"`
+	AssignedBy *uuid.UUID `json:"assigned_by" gorm:"type:uuid;comment:分配者UUID"`
 	AssignedAt time.Time  `json:"assigned_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:分配时间"`
 	ExpiresAt  *time.Time `json:"expires_at" gorm:"type:timestamp;comment:过期时间"`
 	IsActive   bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`

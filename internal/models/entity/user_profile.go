@@ -24,14 +24,14 @@ import (
 type UserProfile struct {
 	UUID      uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:用户资料唯一标识符"`
 	UserUUID  uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;uniqueIndex;comment:关联用户UUID"`
-	Nickname  string     `json:"nickname" gorm:"type:varchar(50);comment:用户昵称"`
-	Avatar    string     `json:"avatar" gorm:"type:varchar(500);comment:用户头像URL"`
+	Nickname  *string    `json:"nickname" gorm:"type:varchar(50);comment:用户昵称"`
+	Avatar    *string    `json:"avatar" gorm:"type:varchar(500);comment:用户头像URL"`
 	Gender    int        `json:"gender" gorm:"type:smallint;default:0;comment:性别(0-未知,1-男,2-女)"`
 	Birthday  *time.Time `json:"birthday" gorm:"type:date;comment:生日"`
-	Country   string     `json:"country" gorm:"type:varchar(50);comment:国家"`
-	Province  string     `json:"province" gorm:"type:varchar(50);comment:省份/州"`
-	City      string     `json:"city" gorm:"type:varchar(50);comment:城市"`
-	Bio       string     `json:"bio" gorm:"type:text;comment:个人简介"`
+	Country   *string    `json:"country" gorm:"type:varchar(50);comment:国家"`
+	Province  *string    `json:"province" gorm:"type:varchar(50);comment:省份/州"`
+	City      *string    `json:"city" gorm:"type:varchar(50);comment:城市"`
+	Bio       *string    `json:"bio" gorm:"type:text;comment:个人简介"`
 	CreatedAt time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 

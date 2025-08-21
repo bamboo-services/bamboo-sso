@@ -64,26 +64,26 @@ type UserThirdPartyQQ struct {
 	UserUUID       uuid.UUID  `json:"user_uuid" gorm:"type:uuid;not null;index;comment:关联用户UUID"`
 	ProviderUUID   uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联QQ提供商UUID"`
 	OpenID         string     `json:"open_id" gorm:"type:varchar(100);not null;uniqueIndex;comment:QQ用户唯一标识"`
-	UnionID        string     `json:"union_id" gorm:"type:varchar(100);comment:QQ开放平台统一用户标识"`
-	QQNumber       string     `json:"qq_number" gorm:"type:varchar(20);comment:QQ号码"`
-	Nickname       string     `json:"nickname" gorm:"type:varchar(100);comment:QQ用户昵称"`
-	Gender         string     `json:"gender" gorm:"type:varchar(10);comment:性别(男/女)"`
-	Province       string     `json:"province" gorm:"type:varchar(50);comment:省份"`
-	City           string     `json:"city" gorm:"type:varchar(50);comment:城市"`
-	Year           string     `json:"year" gorm:"type:varchar(4);comment:出生年份"`
-	Constellation  string     `json:"constellation" gorm:"type:varchar(20);comment:星座"`
+	UnionID        *string    `json:"union_id" gorm:"type:varchar(100);comment:QQ开放平台统一用户标识"`
+	QQNumber       *string    `json:"qq_number" gorm:"type:varchar(20);comment:QQ号码"`
+	Nickname       *string    `json:"nickname" gorm:"type:varchar(100);comment:QQ用户昵称"`
+	Gender         *string    `json:"gender" gorm:"type:varchar(10);comment:性别(男/女)"`
+	Province       *string    `json:"province" gorm:"type:varchar(50);comment:省份"`
+	City           *string    `json:"city" gorm:"type:varchar(50);comment:城市"`
+	Year           *string    `json:"year" gorm:"type:varchar(4);comment:出生年份"`
+	Constellation  *string    `json:"constellation" gorm:"type:varchar(20);comment:星座"`
 	IsLost         bool       `json:"is_lost" gorm:"type:boolean;default:false;comment:是否为认证用户"`
-	Figureurl      string     `json:"figureurl" gorm:"type:varchar(500);comment:用户头像30x30"`
-	Figureurl1     string     `json:"figureurl_1" gorm:"type:varchar(500);comment:用户头像50x50"`
-	Figureurl2     string     `json:"figureurl_2" gorm:"type:varchar(500);comment:用户头像100x100"`
-	FigureurlQQ1   string     `json:"figureurl_qq_1" gorm:"type:varchar(500);comment:QQ头像40x40"`
-	FigureurlQQ2   string     `json:"figureurl_qq_2" gorm:"type:varchar(500);comment:QQ头像100x100"`
+	Figureurl      *string    `json:"figureurl" gorm:"type:varchar(500);comment:用户头像30x30"`
+	Figureurl1     *string    `json:"figureurl_1" gorm:"type:varchar(500);comment:用户头像50x50"`
+	Figureurl2     *string    `json:"figureurl_2" gorm:"type:varchar(500);comment:用户头像100x100"`
+	FigureurlQQ1   *string    `json:"figureurl_qq_1" gorm:"type:varchar(500);comment:QQ头像40x40"`
+	FigureurlQQ2   *string    `json:"figureurl_qq_2" gorm:"type:varchar(500);comment:QQ头像100x100"`
 	IsVip          bool       `json:"is_vip" gorm:"type:boolean;default:false;comment:是否为QQ会员"`
 	VipLevel       int        `json:"vip_level" gorm:"type:smallint;default:0;comment:QQ会员等级"`
 	IsYellowVip    bool       `json:"is_yellow_vip" gorm:"type:boolean;default:false;comment:是否为黄钻会员"`
 	YellowVipLevel int        `json:"yellow_vip_level" gorm:"type:smallint;default:0;comment:黄钻等级"`
-	AccessToken    string     `json:"-" gorm:"type:text;comment:QQ访问令牌(加密)"`
-	RefreshToken   string     `json:"-" gorm:"type:text;comment:QQ刷新令牌(加密)"`
+	AccessToken    *string    `json:"-" gorm:"type:text;comment:QQ访问令牌(加密)"`
+	RefreshToken   *string    `json:"-" gorm:"type:text;comment:QQ刷新令牌(加密)"`
 	TokenExpiresAt *time.Time `json:"token_expires_at" gorm:"type:timestamp;comment:访问令牌过期时间"`
 	IsActive       bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
 	FirstBindAt    time.Time  `json:"first_bind_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:首次绑定时间"`

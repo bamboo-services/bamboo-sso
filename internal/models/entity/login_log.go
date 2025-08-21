@@ -27,9 +27,9 @@ type LoginLog struct {
 	ProviderUUID       *uuid.UUID `json:"provider_uuid" gorm:"type:uuid;comment:第三方提供商UUID(第三方登录时)"`
 	IPAddress          string     `json:"ip_address" gorm:"type:varchar(45);not null;comment:登录IP地址"`
 	UserAgent          string     `json:"user_agent" gorm:"type:text;not null;comment:用户浏览器User-Agent"`
-	BrowserFingerprint string     `json:"browser_fingerprint" gorm:"type:varchar(128);comment:浏览器指纹哈希"`
+	BrowserFingerprint *string    `json:"browser_fingerprint" gorm:"type:varchar(128);comment:浏览器指纹哈希"`
 	IsSuccess          bool       `json:"is_success" gorm:"type:boolean;not null;comment:是否成功"`
-	FailureReason      string     `json:"failure_reason" gorm:"type:varchar(255);comment:失败原因"`
+	FailureReason      *string    `json:"failure_reason" gorm:"type:varchar(255);comment:失败原因"`
 	LoginAt            time.Time  `json:"login_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:登录时间"`
 	CreatedAt          time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 

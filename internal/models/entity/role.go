@@ -18,7 +18,7 @@ type Role struct {
 	UUID        uuid.UUID `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:角色唯一标识符"`
 	Name        string    `json:"name" gorm:"type:varchar(50);not null;uniqueIndex;comment:角色名称"`
 	DisplayName string    `json:"display_name" gorm:"type:varchar(100);not null;comment:角色显示名称"`
-	Description string    `json:"description" gorm:"type:varchar(255);comment:角色描述信息"`
+	Description *string   `json:"description" gorm:"type:varchar(255);comment:角色描述信息"`
 	CreatedAt   time.Time `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 }

@@ -25,21 +25,21 @@ import (
 //   - CreatedAt: 创建记录的时间戳。
 //   - UpdatedAt: 最后更新时间戳。
 type Application struct {
-	UUID              uuid.UUID `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:应用唯一标识符"`
-	Name              string    `json:"name" gorm:"type:varchar(100);not null;comment:应用名称"`
-	Description       string    `json:"description" gorm:"type:text;comment:应用描述"`
-	ApplicationID     string    `json:"application_id" gorm:"type:varchar(50);not null;uniqueIndex;comment:应用标识符"`
-	ApplicationSecret string    `json:"-" gorm:"type:varchar(255);not null;comment:应用密钥"`
-	RedirectURIs      string    `json:"redirect_uris" gorm:"type:jsonb;comment:允许的回调地址(JSON数组)"`
-	AllowedOrigins    string    `json:"allowed_origins" gorm:"type:jsonb;comment:允许的来源域名(JSON数组)"`
-	LogoURL           string    `json:"logo_url" gorm:"type:varchar(500);comment:应用Logo地址"`
-	HomepageURL       string    `json:"homepage_url" gorm:"type:varchar(500);comment:应用主页地址"`
-	PrivacyPolicyURL  string    `json:"privacy_policy_url" gorm:"type:varchar(500);comment:隐私政策地址"`
-	TermsOfServiceURL string    `json:"terms_of_service_url" gorm:"type:varchar(500);comment:服务条款地址"`
-	IsActive          bool      `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
-	CreatedBy         uuid.UUID `json:"created_by" gorm:"type:uuid;comment:创建者UUID"`
-	CreatedAt         time.Time `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
-	UpdatedAt         time.Time `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
+	UUID              uuid.UUID  `json:"uuid" gorm:"primaryKey;type:uuid;not null;comment:应用唯一标识符"`
+	Name              string     `json:"name" gorm:"type:varchar(100);not null;comment:应用名称"`
+	Description       *string    `json:"description" gorm:"type:text;comment:应用描述"`
+	ApplicationID     string     `json:"application_id" gorm:"type:varchar(50);not null;uniqueIndex;comment:应用标识符"`
+	ApplicationSecret string     `json:"-" gorm:"type:varchar(255);not null;comment:应用密钥"`
+	RedirectURIs      *string    `json:"redirect_uris" gorm:"type:jsonb;comment:允许的回调地址(JSON数组)"`
+	AllowedOrigins    *string    `json:"allowed_origins" gorm:"type:jsonb;comment:允许的来源域名(JSON数组)"`
+	LogoURL           *string    `json:"logo_url" gorm:"type:varchar(500);comment:应用Logo地址"`
+	HomepageURL       *string    `json:"homepage_url" gorm:"type:varchar(500);comment:应用���页地址"`
+	PrivacyPolicyURL  *string    `json:"privacy_policy_url" gorm:"type:varchar(500);comment:隐私政策地址"`
+	TermsOfServiceURL *string    `json:"terms_of_service_url" gorm:"type:varchar(500);comment:服务条款地址"`
+	IsActive          bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
+	CreatedBy         *uuid.UUID `json:"created_by" gorm:"type:uuid;comment:创建者UUID"`
+	CreatedAt         time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
+	UpdatedAt         time.Time  `json:"updated_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:更新时间"`
 
 	// 关联关系
 	AuthorizationCodes []*AuthorizationCode `json:"authorization_codes,omitempty" gorm:"foreignKey:ApplicationUUID;references:UUID;constraint:OnDelete:CASCADE;comment:授权码"`

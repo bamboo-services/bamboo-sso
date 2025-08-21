@@ -8,3 +8,10 @@ database:
   user: xlf_sso
   pass: xlf_sso
   name: xlf_sso
+  prefix: xlf_
+nosql:
+  host: localhost
+  port: 6379
+  database: 0
+  password: ''
+  prefix: sso

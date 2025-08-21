@@ -1,7 +1,6 @@
 package config
 
 import (
-	"database/sql"
 	"errors"
 	xConsts "github.com/bamboo-services/bamboo-base-go/constants"
 	"github.com/bamboo-services/bamboo-sso/internal/models/entity"
@@ -51,7 +50,7 @@ func (i *InitializeData) RoleInit(getEntity ...*entity.Role) {
 	// 检查并创建默认角色
 	for _, roleEntity := range getEntity {
 		var role entity.Role
-		if err := db.Where("name = @name", sql.Named("name", roleEntity.Name)).First(&role).Error; err != nil {
+		if err := db.Where(entity.Role{Name: roleEntity.Name}).First(&role).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				log.Named(xConsts.LogINIT).Sugar().Debugf("角色 %s 不存在，创建默认角色", roleEntity.Name)
 				noneRoleList = append(noneRoleList, roleEntity)
@@ -67,6 +66,39 @@ func (i *InitializeData) RoleInit(getEntity ...*entity.Role) {
 	}
 }
 
+// ApplicationInit 检查并初始化系统中缺失的应用数据。
+//
+// 参数 getEntity 是一组指针，指向需要检测或创建的应用实体。
+// 如果传入的应用在数据库中不存在，则会创建默认的应用记录。
+// 当应用已存在时，不会重复创建，避免数据库冗余。
+//
+// 方法使用逻辑：
+//   - 首先检查每个应用的名称是否已存在于数据库。
+//   - 若应用不存在，则记录在批量插入列表中以优化数据库操作。
+//   - 最后，统一插入所有需要创建的应用记录以减少数据库压力。
+//
+// 注意：创建操作会忽略已存在的记录，并直接略过处理。
 func (i *InitializeData) ApplicationInit(getEntity ...*entity.Application) {
+	db := i.db
+	log := i.log
 
+	var noneAppList []*entity.Application
+
+	// 检查并创建默认应用
+	for _, appEntity := range getEntity {
+		var app entity.Application
+		if err := db.Where(entity.Application{Name: appEntity.Name}).First(&app).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				log.Named(xConsts.LogINIT).Sugar().Debugf("应用 %s 不存在，创建默认应用", appEntity.Name)
+				noneAppList = append(noneAppList, appEntity)
+			} else {
+				log.Named(xConsts.LogINIT).Sugar().Debugf("应用 %s 已存在，跳过创建", appEntity.Name)
+			}
+		}
+	}
+
+	// 批量创建应用「统一插入减少数据库操作压力」
+	if len(noneAppList) > 0 {
+		db.Create(noneAppList)
+	}
 }

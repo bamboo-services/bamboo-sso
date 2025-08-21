@@ -62,26 +62,26 @@ type UserThirdPartyGithub struct {
 	ProviderUUID     uuid.UUID  `json:"provider_uuid" gorm:"type:uuid;not null;index;comment:关联Github提供商UUID"`
 	GithubID         int64      `json:"github_id" gorm:"type:bigint;not null;uniqueIndex;comment:Github用户ID"`
 	Login            string     `json:"login" gorm:"type:varchar(100);not null;index;comment:Github用户名"`
-	NodeID           string     `json:"node_id" gorm:"type:varchar(50);comment:Github Node ID"`
-	Avatar           string     `json:"avatar" gorm:"type:varchar(500);comment:Github用户头像"`
-	GravatarID       string     `json:"gravatar_id" gorm:"type:varchar(50);comment:Gravatar ID"`
-	Type             string     `json:"type" gorm:"type:varchar(20);default:'User';comment:用户类型(User/Organization)"`
+	NodeID           *string    `json:"node_id" gorm:"type:varchar(50);comment:Github Node ID"`
+	Avatar           *string    `json:"avatar" gorm:"type:varchar(500);comment:Github用户头像"`
+	GravatarID       *string    `json:"gravatar_id" gorm:"type:varchar(50);comment:Gravatar ID"`
+	Type             *string    `json:"type" gorm:"type:varchar(20);default:'User';comment:用户类型(User/Organization)"`
 	SiteAdmin        bool       `json:"site_admin" gorm:"type:boolean;default:false;comment:是否为站点管理员"`
-	Name             string     `json:"name" gorm:"type:varchar(100);comment:用户真实姓名"`
-	Company          string     `json:"company" gorm:"type:varchar(100);comment:所属公司"`
-	Blog             string     `json:"blog" gorm:"type:varchar(200);comment:博客地址"`
-	Location         string     `json:"location" gorm:"type:varchar(100);comment:地理位置"`
-	Email            string     `json:"email" gorm:"type:varchar(100);comment:邮箱地址"`
-	Bio              string     `json:"bio" gorm:"type:text;comment:个人简介"`
-	TwitterUsername  string     `json:"twitter_username" gorm:"type:varchar(50);comment:Twitter用户名"`
+	Name             *string    `json:"name" gorm:"type:varchar(100);comment:用户真实姓名"`
+	Company          *string    `json:"company" gorm:"type:varchar(100);comment:所属公司"`
+	Blog             *string    `json:"blog" gorm:"type:varchar(200);comment:博客地址"`
+	Location         *string    `json:"location" gorm:"type:varchar(100);comment:地理位置"`
+	Email            *string    `json:"email" gorm:"type:varchar(100);comment:邮箱地址"`
+	Bio              *string    `json:"bio" gorm:"type:text;comment:个人简介"`
+	TwitterUsername  *string    `json:"twitter_username" gorm:"type:varchar(50);comment:Twitter用户名"`
 	PublicRepos      int        `json:"public_repos" gorm:"type:integer;default:0;comment:公开仓库数量"`
 	PublicGists      int        `json:"public_gists" gorm:"type:integer;default:0;comment:公开Gist数量"`
 	Followers        int        `json:"followers" gorm:"type:integer;default:0;comment:关注者数量"`
 	Following        int        `json:"following" gorm:"type:integer;default:0;comment:关注的人数量"`
 	HirableAvailable bool       `json:"hirable_available" gorm:"type:boolean;default:false;comment:是否可雇佣"`
-	AccessToken      string     `json:"-" gorm:"type:text;comment:Github访问令牌(加密)"`
-	TokenType        string     `json:"token_type" gorm:"type:varchar(20);default:'bearer';comment:令牌类型"`
-	Scope            string     `json:"scope" gorm:"type:varchar(200);comment:权限范围"`
+	AccessToken      *string    `json:"-" gorm:"type:text;comment:Github访问令牌(加密)"`
+	TokenType        *string    `json:"token_type" gorm:"type:varchar(20);default:'bearer';comment:令牌类型"`
+	Scope            *string    `json:"scope" gorm:"type:varchar(200);comment:权限范围"`
 	IsActive         bool       `json:"is_active" gorm:"type:boolean;not null;default:true;comment:是否激活"`
 	FirstBindAt      time.Time  `json:"first_bind_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:首次绑定时间"`
 	LastLoginAt      *time.Time `json:"last_login_at" gorm:"type:timestamp;comment:最后登录时间"`

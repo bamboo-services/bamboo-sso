@@ -32,10 +32,10 @@ type AuthorizationLog struct {
 	RequestUserAgent          string     `json:"request_user_agent" gorm:"type:text;not null;comment:请求User-Agent"`
 	RequestBrowserFingerprint string     `json:"request_browser_fingerprint" gorm:"type:varchar(128);not null;comment:请求浏览器指纹"`
 	IsSuccess                 bool       `json:"is_success" gorm:"type:boolean;not null;comment:验证是否成功"`
-	FailureReason             string     `json:"failure_reason" gorm:"type:varchar(255);comment:失败原因"`
-	FingerprintMatched        bool       `json:"fingerprint_matched" gorm:"type:boolean;comment:指纹是否匹配"`
-	UserAgentMatched          bool       `json:"user_agent_matched" gorm:"type:boolean;comment:User-Agent是否匹配"`
-	IPMatched                 bool       `json:"ip_matched" gorm:"type:boolean;comment:IP是否匹配"`
+	FailureReason             *string    `json:"failure_reason" gorm:"type:varchar(255);comment:失败原因"`
+	FingerprintMatched        *bool      `json:"fingerprint_matched" gorm:"type:boolean;comment:指纹是否匹配"`
+	UserAgentMatched          *bool      `json:"user_agent_matched" gorm:"type:boolean;comment:User-Agent是否匹配"`
+	IPMatched                 *bool      `json:"ip_matched" gorm:"type:boolean;comment:IP是否匹配"`
 	VerifiedAt                time.Time  `json:"verified_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:验证时间"`
 	CreatedAt                 time.Time  `json:"created_at" gorm:"type:timestamp;not null;default:CURRENT_TIMESTAMP;comment:创建时间"`
 

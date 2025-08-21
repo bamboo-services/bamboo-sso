@@ -17,7 +17,7 @@ func main() {
 	router.RegisterRoute(engine)
 
 	// 启动服务器
-	startPort := 8080
+	startPort := 2233
 	if register.Config.Xlf.Port != nil {
 		startPort = *register.Config.Xlf.Port
 	}
